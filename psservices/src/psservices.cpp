@@ -1,5 +1,5 @@
 /*
- * psservices.cpp
+ * check_space.cpp
  *
  *  Created on: Sep 3, 2018
  *      Author: psadm2
@@ -32,18 +32,15 @@ int spawn(char* program, char** arg_list) {
 int main() {
 	/* The argument list to pass to the "ls" command. */
 	char* arg_list[] = {
-		"psadmin", /* argv[0], the name of the program. */
-		"-c",
-		"sstatus",
-		"-d",
-		"APPDOM",
+		"ls", /* argv[0], the name of the program. */
+		"-l",
 		"/",
 		NULL /* The argument list must end with a NULL. */
 	};
 
 /* Spawn a child process running the "ls" command. Ignore the
  returned child process ID. */
-	spawn ("psadmin", arg_list);
+	spawn ("ls", arg_list);
 	printf ("done with main program\n");
 	return 0;
 }
