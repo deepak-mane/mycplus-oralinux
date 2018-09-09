@@ -13,8 +13,15 @@
 #include <unistd.h>
 #include "Webserver.h"
 #include "PSutils.h"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 using namespace std;
+
+Webserver::Webserver() {
+	cout << "Webserver Instance created." << endl;
+	Webserver_status = true;
+}
+
 
 void Webserver::status() {
 	// TODO Auto-generated constructor stub
@@ -49,4 +56,7 @@ void Webserver::stop() {
 	psutils.spawn ("psadmin", arg_list);
 }
 
-
+Webserver::~Webserver() {
+	cout << "Webserver Instance destroyed." << endl;
+	Webserver_status = false;
+}

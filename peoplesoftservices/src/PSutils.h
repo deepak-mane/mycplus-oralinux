@@ -12,6 +12,8 @@
 class PSutils {
 public:
 	int spawn(char* program, char** arg_list);
+	PSutils();
+	~PSutils();
 };
 
 #endif /* PSUTILS_H_ */

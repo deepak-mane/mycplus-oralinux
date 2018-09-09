@@ -4,9 +4,8 @@
  *  Created on: Sep 6, 2018
  *      Author: psadm2
  */
-#define C_TEXT( text ) ((char*)std::string( text ).c_str())
-
 #include <iostream>
+#define C_TEXT( text ) ((char*)std::string( text ).c_str())
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -14,8 +13,15 @@
 #include <unistd.h>
 #include "Appserver.h"
 #include "PSutils.h"
+#include <string.h>
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
-using namespace std;
+Appserver::Appserver() {
+	std::cout << "Appserver Instance created." << std::endl;
+	Appserver_status = true;
+}
+
+
 
 void Appserver::status() {
 	// TODO Auto-generated constructor stub
@@ -76,3 +82,7 @@ void Appserver::restart() {
 	psutils.spawn ("psadmin", arg_list3);
 }
 
+Appserver::~Appserver() {
+	std::cout << "Appserver  Instance destroyed." << std::endl;
+	Appserver_status = false;
+}

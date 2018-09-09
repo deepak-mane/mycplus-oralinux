@@ -16,32 +16,29 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 using namespace std;
 
 int main() {
-
+	printf("peoplesoftservices script started.\n");
 	Appserver app;
 	Webserver web;
 	ProcessScheduler prcs;
 
-//		app.stop();
-//		web.stop();
-//		prcs.stop();
-
-	app.start();
-	web.start();
-	prcs.start();
-
-
-//	app.start();
 //	app.stop();
+//	web.stop();
+//	prcs.stop();
+//
+	app.start();
+//	web.start();
+//	prcs.start();
+//
 //	app.status();
-//	app.restart();
-//  app.status();
+//	app.status();
+//	web.status();
 
-	printf("done with main program\n");
+	printf("peoplesoftservices script completed.\n");
 
 	return 0;
 }

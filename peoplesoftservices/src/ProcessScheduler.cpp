@@ -13,8 +13,14 @@
 #include <unistd.h>
 #include "ProcessScheduler.h"
 #include "PSutils.h"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 using namespace std;
+
+ProcessScheduler::ProcessScheduler() {
+	cout << "ProcessScheduler Instance created." << endl;
+	ProcessScheduler_status = true;
+}
 
 void ProcessScheduler::status() {
 	// TODO Auto-generated constructor stub
@@ -71,4 +77,9 @@ void ProcessScheduler::restart() {
 	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
 	psutils.spawn ("psadmin", arg_list2);
 
+}
+
+ProcessScheduler::~ProcessScheduler() {
+	cout << "ProcessScheduler Instance destroyed." << endl;
+	ProcessScheduler_status = false;
 }

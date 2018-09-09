@@ -12,13 +12,17 @@
 
 //class Appserver: public PSutils {
 class Appserver {
+private:
+	bool Appserver_status;
+
 
 public:
 	void status();
 	void start();
 	void stop();
 	void restart();
-
+	Appserver();
+	~Appserver();
 };
 
 #endif /* APPSERVER_H_ */

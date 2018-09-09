@@ -12,16 +12,15 @@
 
 class ProcessScheduler {
 private:
-//	std::string env;
-//	std::string server;
-//	std::string action;
+	bool ProcessScheduler_status;
 
 public:
 	void status();
 	void start();
 	void stop();
 	void restart();
-
+	ProcessScheduler();
+	~ProcessScheduler();
 };
 
 #endif /* PROCESSSCHEDULER_H_ */

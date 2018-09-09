@@ -12,16 +12,15 @@
 
 class Webserver {
 private:
-//	std::string env;
-//	std::string server;
-//	std::string action;
+	bool Webserver_status;
 
 public:
 	void status();
 	void start();
 	void stop();
 	void restart();
-
+	Webserver();
+	~Webserver();
 };
 
 #endif /* WEBSERVER_H_ */
