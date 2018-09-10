@@ -10,15 +10,44 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+// for fd included
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <fstream>
+
 #include "PSutils.h"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
+
+
+/* since pipes are unidirectional, we need two pipes.
+   one for data to flow from parent's stdout to child's
+   stdin and the other for child's stdout to flow to
+   parent's stdin */
+
+#define NUM_PIPES          2
+#define PARENT_WRITE_PIPE  0
+#define PARENT_READ_PIPE   1
+
+int pipes[NUM_PIPES][2];
+
+/* always in a pipe[], pipe[0] is for read and
+   pipe[1] is for write */
+#define READ_FD  0
+#define WRITE_FD 1
+
+#define PARENT_READ_FD  ( pipes[PARENT_READ_PIPE][READ_FD]   )
+#define PARENT_WRITE_FD ( pipes[PARENT_WRITE_PIPE][WRITE_FD] )
+#define CHILD_READ_FD   ( pipes[PARENT_WRITE_PIPE][READ_FD]  )
+#define CHILD_WRITE_FD  ( pipes[PARENT_READ_PIPE][WRITE_FD]  )
 
 
 PSutils::PSutils() {
-	std::cout << "PSutils intance created" << std::endl;
+	std::cout << "PSutils instance created" << std::endl;
 }
 
 PSutils::~PSutils() {
-	std::cout << "PSutils intance destroyed" << std::endl;
+	std::cout << "PSutils instance destroyed" << std::endl;
 }
 
 
@@ -28,6 +57,24 @@ PSutils::~PSutils() {
 
 int PSutils::spawn(char* program, char** arg_list) {
 	// TODO Auto-generated constructor stub
+	int outfd[2];
+	int infd[2];
+
+	pipe(outfd); /* Where the parent is going to write to */
+	pipe(infd); /* From where parent is going to read */
+
+	close(STDOUT_FILENO);
+	close(STDIN_FILENO);
+
+	dup2(outfd[0], STDIN_FILENO);
+	dup2(infd[1], STDOUT_FILENO);
+
+	close(outfd[0]); /* Not required for the child */
+	close(outfd[1]);
+	close(infd[0]);
+	close(infd[1]);
+
+
 	/* Spawn a child process running a new program. PROGRAM is the name
 	 of the program to run; the path will be searched for this program.
 	 ARG_LIST is a NULL-terminated list of character strings to be
@@ -38,6 +85,7 @@ int PSutils::spawn(char* program, char** arg_list) {
 
 	/* Duplicate this process. */
 	child_pid = fork();
+
 	char *envp[] =
 	{
 	"USER=psadm2",
@@ -60,25 +108,72 @@ int PSutils::spawn(char* program, char** arg_list) {
 		/* CHILD */
 		//printf("Child: executing program\n");
 		std::cout << "Child: executing " << program << std::endl;
-	    /* Now execute PROGRAM, searching for it in the path. */
+
+		char input[100];
+
+		close(outfd[0]); /* These are being used by the child */
+		close(infd[1]);
+
+		write(outfd[1],"2^32\n",5); /* Write to child_pid stdin */
+
+		input[read(infd[0],input,100)] = 0; /* Read from child_pid stdout */
+
+		printf("%s",input);
+
+//		std::ifstream input_file("peoplesoftservices.input");	// open the input file
+//		if (!input_file.is_open()) { 		// check for successful opening
+//			std::cout << "Input file could not be opened! Terminating!" << std::endl;
+//			return 1;
+//		}
+
+		std::ofstream output_file("peoplesoftservices.output"); // open the output file
+		if (!output_file.is_open()) { // check for successful opening
+			std::cout << "Output file could not be opened! Terminating!" << std::endl;
+			return 1;
+		}
+		// read as long as the stream is good - any problem, just quit.
+		// output is each number times two on a line by itself
+		// char s[1000]; which is subsitute for char input[100]
+		char *lastline;
+
+		while (!std::cin.fail()) {
+			std::cin.getline(input, 1000);
+			if (!std::cin.fail()) {
+				lastline = input;
+			}
+			std::cout << "Reading... " << input << std::endl;
+		}
+		std::cout << "The last line was '" << lastline << "'" << std::endl;
+//		input_file.close();
+		output_file.close();
+		std::cout << "Done!" << std::endl;
+
+
+//		PSutils::GetStream() << input;
+//		PSutils::GetStream() << "test\n";
+		close(outfd[1]);
+		close(infd[0]);
+
+		/* Now execute PROGRAM, searching for it in the path. */
 		execvp(program, arg_list);
-	    //only get here if exec failed
-	    perror("execve failed");
-	  }else if (child_pid > 0){
-	    /* PARENT */
+		//only get here if exec failed
+		perror("execve failed");
+	}else if (child_pid > 0){
+		/* PARENT */
 
-	    if( (pid = wait(&status)) < 0){
-	      perror("wait");
-	      _exit(1);
-	    }
-	    printf("thread ended successfully\n");
-//	    printf("Parent: finished\n");
+		if( (pid = wait(&status)) < 0){
+		perror("wait");
+		_exit(1);
+		}
+		printf("thread ended successfully\n");
+		//	    printf("Parent: finished\n");
 
-	  }else{
-	    perror("fork failed");
-	    _exit(1);
-	  }
-	        return 0;
+	}else{
+		perror("fork failed");
+		_exit(1);
 	}
+
+	return 0;
+}
 
 
