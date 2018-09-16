@@ -15,10 +15,10 @@ private:
 	bool Webserver_status;
 
 public:
-	void status();
-	void start();
-	void stop();
-	void restart();
+	void status(std::string environment, std::string server, std::string action, std::string web_server, std::string web_status);
+	void start(std::string environment, std::string server, std::string action, std::string web_server, std::string web_start);
+	void stop(std::string environment, std::string server, std::string action, std::string web_server, std::string web_stop);
+	void restart(std::string environment, std::string server, std::string action, std::string web_server, std::string web_restart);
 	Webserver();
 	~Webserver();
 };

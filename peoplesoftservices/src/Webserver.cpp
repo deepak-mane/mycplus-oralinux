@@ -13,50 +13,76 @@
 #include <unistd.h>
 #include "Webserver.h"
 #include "PSutils.h"
+#include "Logger.h"
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
-using namespace std;
+using namespace CPlusPlusLogging;
 
 Webserver::Webserver() {
-	cout << "Webserver Instance created." << endl;
+	LOG_DEBUG("Webserver Instance created.");
 	Webserver_status = true;
 }
 
 
-void Webserver::status() {
+void Webserver::status(std::string environment, std::string server, std::string action, std::string web_server, std::string web_status) {
 	// TODO Auto-generated constructor stub
-	printf ("Checking Status of Appserver ...\n");
+	printf ("Checking Status of Webserver ...\n");
 	/* The argument list to pass to the "psadmin" command. */
-	char* arg_list[] = {	"psadmin", "-c", "sstatus", "-d", "APPDOM", "/", NULL };
-
+	std::cout << environment << ": Variable environment" << std::endl;
+	std::cout << server << ": Variable server" << std::endl;
+	std::cout << action << ": Variable Action" << std::endl;
 	PSutils psutils;
 	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
-	psutils.spawn ("psadmin", arg_list);
+	std::string flag1 = web_server;
+	std::string flag2 = web_status;
+	std::string flag3 = environment;
+	psutils.buildarg(flag1, flag2, flag3);
 }
 
-void Webserver::start() {
+void Webserver::start(std::string environment, std::string server, std::string action, std::string web_server, std::string web_start) {
 	// TODO Auto-generated constructor stub
 	printf ("Starting Webserver ...\n");
 	/* The argument list to pass to the "psadmin" command. */
-	char* arg_list[] = {	"psadmin", "-w", "start", "-d", "peoplesoft" , NULL };
-
+	std::cout << environment << ": Variable environment" << std::endl;
+	std::cout << server << ": Variable server" << std::endl;
+	std::cout << action << ": Variable Action" << std::endl;
 	PSutils psutils;
 	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
-	psutils.spawn ("psadmin", arg_list);
+	std::string flag1 = web_server;
+	std::string flag2 = web_start;
+	std::string flag3 = environment;
+	psutils.buildarg(flag1, flag2, flag3);
 }
 
-void Webserver::stop() {
+void Webserver::stop(std::string environment, std::string server, std::string action, std::string web_server, std::string web_stop) {
 	// TODO Auto-generated constructor stub
 	printf ("Stopping Webserver ...\n");
 	/* The argument list to pass to the "psadmin" command. */
-	char* arg_list[] = {	"psadmin", "-w", "shutdown!", "-d", "peoplesoft" , NULL };
-
+	std::cout << environment << ": Variable environment" << std::endl;
+	std::cout << server << ": Variable server" << std::endl;
+	std::cout << action << ": Variable Action" << std::endl;
 	PSutils psutils;
 	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
-	psutils.spawn ("psadmin", arg_list);
+	std::string flag1 = web_server;
+	std::string flag2 = web_stop;
+	std::string flag3 = environment;
+	psutils.buildarg(flag1, flag2, flag3);
+}
+
+void Webserver::restart(std::string environment, std::string server, std::string action, std::string web_server, std::string web_restart) {
+	// TODO Auto-generated constructor stub
+	printf ("Re-Starting  Webserver ...\n");
+	std::cout << environment << ": Variable environment" << std::endl;
+	std::cout << server << ": Variable server" << std::endl;
+	std::cout << action << ": Variable Action" << std::endl;
+	PSutils psutils;
+	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
+	std::string flag1 = web_server;
+	std::string flag2 = web_restart;
+	std::string flag3 = environment;
+	psutils.buildarg(flag1, flag2, flag3);
 }
 
 Webserver::~Webserver() {
-	cout << "Webserver Instance destroyed." << endl;
+	LOG_DEBUG("Webserver Instance destroyed.");
 	Webserver_status = false;
 }

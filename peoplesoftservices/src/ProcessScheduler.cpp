@@ -13,73 +13,77 @@
 #include <unistd.h>
 #include "ProcessScheduler.h"
 #include "PSutils.h"
+#include "Logger.h"
 #pragma GCC diagnostic ignored "-Wwrite-strings"
+using namespace CPlusPlusLogging;
 
-using namespace std;
+
 
 ProcessScheduler::ProcessScheduler() {
-	cout << "ProcessScheduler Instance created." << endl;
+	LOG_DEBUG("ProcessScheduler Instance created.");
 	ProcessScheduler_status = true;
 }
 
-void ProcessScheduler::status() {
+void ProcessScheduler::status(std::string environment, std::string server, std::string action, std::string prcs_server, std::string prcs_status) {
 	// TODO Auto-generated constructor stub
 	printf ("Checking Status of Process Scheduler ...\n");
 	/* The argument list to pass to the "psadmin" command. */
-	char* arg_list[] = {	"psadmin", "-p", "status", "-d", "PRCSDOM", "/", NULL };
-
+	std::cout << environment << ": Variable environment" << std::endl;
+	std::cout << server << ": Variable server" << std::endl;
+	std::cout << action << ": Variable Action" << std::endl;
 	PSutils psutils;
 	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
-	psutils.spawn ("psadmin", arg_list);
+	std::string flag1 = prcs_server;
+	std::string flag2 = prcs_status;
+	std::string flag3 = environment;
+	psutils.buildarg(flag1, flag2, flag3);
 }
 
-void ProcessScheduler::start() {
+void ProcessScheduler::start(std::string environment, std::string server, std::string action, std::string prcs_server, std::string prcs_start) {
 	// TODO Auto-generated constructor stub
 	printf ("Starting Process Scheduler ...\n");
 	/* The argument list to pass to the "psadmin" command. */
-	char* arg_list[] = {	"psadmin", "-p", "start", "-d", "PRCSDOM", "/", NULL };
-
+	std::cout << environment << ": Variable environment" << std::endl;
+	std::cout << server << ": Variable server" << std::endl;
+	std::cout << action << ": Variable Action" << std::endl;
 	PSutils psutils;
 	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
-	psutils.spawn ("psadmin", arg_list);
+	std::string flag1 = prcs_server;
+	std::string flag2 = prcs_start;
+	std::string flag3 = environment;
+	psutils.buildarg(flag1, flag2, flag3);
 }
 
-void ProcessScheduler::stop() {
+void ProcessScheduler::stop(std::string environment, std::string server, std::string action, std::string prcs_server, std::string prcs_stop) {
 	// TODO Auto-generated constructor stub
 	printf ("Stopping Process Scheduler ...\n");
 	/* The argument list to pass to the "psadmin" command. */
-	char* arg_list[] = {	"psadmin", "-p", "stop", "-d", "PRCSDOM", "/", NULL };
-
+	std::cout << environment << ": Variable environment" << std::endl;
+	std::cout << server << ": Variable server" << std::endl;
+	std::cout << action << ": Variable Action" << std::endl;
 	PSutils psutils;
 	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
-	psutils.spawn ("psadmin", arg_list);
+	std::string flag1 = prcs_server;
+	std::string flag2 = prcs_stop;
+	std::string flag3 = environment;
+	psutils.buildarg(flag1, flag2, flag3);
 }
 
-void ProcessScheduler::restart() {
+void ProcessScheduler::restart(std::string environment, std::string server, std::string action, std::string prcs_server, std::string prcs_restart) {
 	// TODO Auto-generated constructor stub
 	printf ("Re-Starting Process Scheduler ...\n");
-	/* The argument list to pass to the "psadmin" command. */
-	char* arg_list[] = {	"psadmin", "-p", "stop", "-d", "PRCSDOM", "/", NULL };
-
+	std::cout << environment << ": Variable environment" << std::endl;
+	std::cout << server << ": Variable server" << std::endl;
+	std::cout << action << ": Variable Action" << std::endl;
 	PSutils psutils;
 	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
-	psutils.spawn ("psadmin", arg_list);
-
-	/* The argument list to pass to the "psadmin" command. */
-	char* arg_list1[] = {	"psadmin", "-p", "cleanipc", "-d", "PRCSDOM", "/", NULL };
-
-	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
-	psutils.spawn ("psadmin", arg_list1);
-
-	/* The argument list to pass to the "psadmin" command. */
-	char* arg_list2[] = {	"psadmin", "-p", "stop", "-d", "PRCSDOM", "/", NULL };
-
-	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
-	psutils.spawn ("psadmin", arg_list2);
-
+	std::string flag1 = prcs_server;
+	std::string flag2 = prcs_restart;
+	std::string flag3 = environment;
+	psutils.buildarg(flag1, flag2, flag3);
 }
 
 ProcessScheduler::~ProcessScheduler() {
-	cout << "ProcessScheduler Instance destroyed." << endl;
+	LOG_DEBUG("ProcessScheduler Instance destroyed.");
 	ProcessScheduler_status = false;
 }

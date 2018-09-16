@@ -17,10 +17,10 @@ private:
 
 
 public:
-	void status();
-	void start();
-	void stop();
-	void restart();
+	void status(std::string environment, std::string server, std::string action, std::string app_server, std::string app_status);
+	void start(std::string environment, std::string server, std::string action, std::string app_server, std::string app_start);
+	void stop(std::string environment, std::string server, std::string action, std::string app_server, std::string app_stop);
+	void restart(std::string environment, std::string server, std::string action, std::string app_server, std::string app_restart);
 	Appserver();
 	~Appserver();
 };

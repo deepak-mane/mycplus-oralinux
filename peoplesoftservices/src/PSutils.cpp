@@ -1,22 +1,28 @@
 /*
- * PSutils.cpp
  *
+ * PSutils.cpp
  *  Created on: Sep 6, 2018
  *      Author: psadm2
  */
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 // for fd included
+#include <spawn.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <fstream>
-
+#include <sstream>
+#include <cstring>
+#include "Appserver.h"
 #include "PSutils.h"
+#include "Logger.h"
 #pragma GCC diagnostic ignored "-Wwrite-strings"
+using namespace CPlusPlusLogging;
+
 
 
 
@@ -43,132 +49,99 @@ int pipes[NUM_PIPES][2];
 
 
 PSutils::PSutils() {
-	std::cout << "PSutils instance created" << std::endl;
+	// TODO Auto-generated constructor stub
+	LOG_DEBUG("PSutils instance created");
 }
 
 PSutils::~PSutils() {
-	std::cout << "PSutils instance destroyed" << std::endl;
+	LOG_DEBUG("PSutils instance destroyed");
 }
 
 
-//#include <unistd.h>
-//int execve(const char *filename, char *const argv[],char *const envp[]);
-//int main(int argc, char *argv[], char *envp[])
-
 int PSutils::spawn(char* program, char** arg_list) {
-	// TODO Auto-generated constructor stub
+	std::cout << "LOC --- --- PSutils::spawn:: execvp" << std::endl;
 	int outfd[2];
 	int infd[2];
 
-	pipe(outfd); /* Where the parent is going to write to */
-	pipe(infd); /* From where parent is going to read */
-
-	close(STDOUT_FILENO);
-	close(STDIN_FILENO);
-
-	dup2(outfd[0], STDIN_FILENO);
-	dup2(infd[1], STDOUT_FILENO);
-
-	close(outfd[0]); /* Not required for the child */
-	close(outfd[1]);
-	close(infd[0]);
-	close(infd[1]);
-
+	// pipes for parent to write and read
+	pipe(pipes[PARENT_READ_PIPE]);
+	pipe(pipes[PARENT_WRITE_PIPE]);
 
 	/* Spawn a child process running a new program. PROGRAM is the name
 	 of the program to run; the path will be searched for this program.
 	 ARG_LIST is a NULL-terminated list of character strings to be
 	 passed as the program's argument list. Returns the process ID of
 	 the spawned process. */
+
 	pid_t child_pid, pid;
 	int status;
 
 	/* Duplicate this process. */
 	child_pid = fork();
 
-	char *envp[] =
-	{
-	"USER=psadm2",
-	"HOME=/home/psadm2"
-	"LOGNAME=psadm2",
-	"_JAVA_OPTIONS=-Djava.security.egd=file:/dev/./urandom",
-	"PS_HOME=/opt/oracle/psft/pt/ps_home8.56.08",
-	"PS_CFG_HOME=/home/psadm2/psft/pt/8.56",
-	"PS_APP_HOME=/opt/oracle/psft/pt/fscm_app_home",
-	"PS_JRE=/opt/oracle/psft/pt/ps_home8.56.08/jre",
-	"PS_LIBPATH=/opt/oracle/psft/pt/ps_home8.56.08/bin",
-	"PATH=/opt/oracle/psft/pt/ps_home8.56.08/jre/bin:/opt/oracle/psft/pt/ps_home8.56.08/python:/opt/oracle/psft/pt/ps_home8.56.08/appserv:/opt/oracle/psft/pt/ps_home8.56.08/setup:/opt/oracle/psft/pt/bea/tuxedo/tuxedo12.2.2.0.0/bin:.:/opt/oracle/psft/db/oracle-server/12.1.0.2/bin:/opt/oracle/psft/db/oracle-server/12.1.0.2/OPatch:/opt/oracle/psft/db/oracle-server/12.1.0.2/perl/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/puppetlabs/bin:/opt/oracle/psft/pt/ps_home8.56.08/bin:/opt/oracle/psft/pt/ps_home8.56.08/bin/sqr/ORA/bin:/opt/oracle/psft/pt/ps_home8.56.08/verity/linux/_ilnx21/bin:/home/psadm2/bin",
-	"TUXDIR=/opt/oracle/psft/pt/bea/tuxedo/tuxedo12.2.2.0.0",
-	"ORACLE_HOME=/opt/oracle/psft/db/oracle-server/12.1.0.2",
-	0
-	};
+//	char *envp[] =
+//	{
+//	"USER=psadm2",
+//	"HOME=/home/psadm2"
+//	"LOGNAME=psadm2",
+//	"_JAVA_OPTIONS=-Djava.security.egd=file:/dev/./urandom",
+//	"PS_HOME=/opt/oracle/psft/pt/ps_home8.56.08",
+//	"PS_CFG_HOME=/home/psadm2/psft/pt/8.56",
+//	"PS_APP_HOME=/opt/oracle/psft/pt/fscm_app_home",
+//	"PS_JRE=/opt/oracle/psft/pt/ps_home8.56.08/jre",
+//	"PS_LIBPATH=/opt/oracle/psft/pt/ps_home8.56.08/bin",
+//	"PATH=/opt/oracle/psft/pt/ps_home8.56.08/jre/bin:/opt/oracle/psft/pt/ps_home8.56.08/python:/opt/oracle/psft/pt/ps_home8.56.08/appserv:/opt/oracle/psft/pt/ps_home8.56.08/setup:/opt/oracle/psft/pt/bea/tuxedo/tuxedo12.2.2.0.0/bin:.:/opt/oracle/psft/db/oracle-server/12.1.0.2/bin:/opt/oracle/psft/db/oracle-server/12.1.0.2/OPatch:/opt/oracle/psft/db/oracle-server/12.1.0.2/perl/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/puppetlabs/bin:/opt/oracle/psft/pt/ps_home8.56.08/bin:/opt/oracle/psft/pt/ps_home8.56.08/bin/sqr/ORA/bin:/opt/oracle/psft/pt/ps_home8.56.08/verity/linux/_ilnx21/bin:/home/psadm2/bin",
+//	"TUXDIR=/opt/oracle/psft/pt/bea/tuxedo/tuxedo12.2.2.0.0",
+//	"ORACLE_HOME=/opt/oracle/psft/db/oracle-server/12.1.0.2",
+//	0
+//	};
 
 
 	if (child_pid == 0){
 		/* CHILD */
 		//printf("Child: executing program\n");
 		std::cout << "Child: executing " << program << std::endl;
+		char buffer[100];
+		int count;
 
-		char input[100];
+		/* close fds not required by parent */
+		close(CHILD_READ_FD);
+		close(CHILD_WRITE_FD);
 
-		close(outfd[0]); /* These are being used by the child */
-		close(infd[1]);
+		// Write to child’s stdin
+		write(PARENT_WRITE_FD, "2^32\n", 5);
 
-		write(outfd[1],"2^32\n",5); /* Write to child_pid stdin */
-
-		input[read(infd[0],input,100)] = 0; /* Read from child_pid stdout */
-
-		printf("%s",input);
-
-//		std::ifstream input_file("peoplesoftservices.input");	// open the input file
-//		if (!input_file.is_open()) { 		// check for successful opening
-//			std::cout << "Input file could not be opened! Terminating!" << std::endl;
-//			return 1;
-//		}
-
-		std::ofstream output_file("peoplesoftservices.output"); // open the output file
-		if (!output_file.is_open()) { // check for successful opening
-			std::cout << "Output file could not be opened! Terminating!" << std::endl;
-			return 1;
+		// Read from child’s stdout
+		count = read(PARENT_READ_FD, buffer, sizeof(buffer)-1);
+		if (count >= 0) {
+			buffer[count] = 0;
+			printf("%s", buffer);
+		} else {
+			printf("IO Error\n");
 		}
-		// read as long as the stream is good - any problem, just quit.
-		// output is each number times two on a line by itself
-		// char s[1000]; which is subsitute for char input[100]
-		char *lastline;
-
-		while (!std::cin.fail()) {
-			std::cin.getline(input, 1000);
-			if (!std::cin.fail()) {
-				lastline = input;
-			}
-			std::cout << "Reading... " << input << std::endl;
-		}
-		std::cout << "The last line was '" << lastline << "'" << std::endl;
-//		input_file.close();
-		output_file.close();
-		std::cout << "Done!" << std::endl;
-
-
-//		PSutils::GetStream() << input;
-//		PSutils::GetStream() << "test\n";
-		close(outfd[1]);
-		close(infd[0]);
 
 		/* Now execute PROGRAM, searching for it in the path. */
-		execvp(program, arg_list);
+		execvp(program, arg_list); perror("execve failed");
 		//only get here if exec failed
-		perror("execve failed");
-	}else if (child_pid > 0){
+	} else if (child_pid > 0) {
 		/* PARENT */
 
-		if( (pid = wait(&status)) < 0){
-		perror("wait");
-		_exit(1);
-		}
-		printf("thread ended successfully\n");
-		//	    printf("Parent: finished\n");
+		dup2(CHILD_READ_FD, STDIN_FILENO);
+		dup2(CHILD_WRITE_FD, STDOUT_FILENO);
 
-	}else{
+		/* Close fds not required by child. Also, we don't
+		   want the exec'ed program to know these existed */
+		close(CHILD_READ_FD);
+		close(CHILD_WRITE_FD);
+		close(PARENT_READ_FD);
+		close(PARENT_WRITE_FD);
+
+		if( (pid = wait(&status)) < 0) {
+			perror("wait");
+			_exit(1);
+		}
+		printf("fork process ended successfully\n");
+	} else {
 		perror("fork failed");
 		_exit(1);
 	}
@@ -176,4 +149,231 @@ int PSutils::spawn(char* program, char** arg_list) {
 	return 0;
 }
 
+
+
+void PSutils::wrapper(std::string term1, std::string term2, std::string term3) {
+	std::cout << "LOC --- --- PSutils::wrapper" << std::endl;
+	PSutils psutils;
+
+	char * arg_list[6];
+	std::string psadmin_1 = "psadmin";
+	std::string psadmin_2 = term1;
+	std::string psadmin_3 = term2;
+	std::string psadmin_4 = "-d";
+	std::string psadmin_5 = term3;
+	std::string psadmin_6 = "/";
+
+		std::cout << psadmin_1 << ": psadmin_1" << std::endl;
+		std::cout << psadmin_2 << ": psadmin_2" << std::endl;
+		std::cout << psadmin_3 << ": psadmin_3" << std::endl;
+		std::cout << psadmin_4 << ": psadmin_4" << std::endl;
+		std::cout << psadmin_5 << ": psadmin_5" << std::endl;
+		std::cout << psadmin_6 << ": psadmin_6" << std::endl;
+
+	arg_list[0] = (char*)psadmin_1.c_str();
+	arg_list[1] = (char*)psadmin_2.c_str();
+	arg_list[2] = (char*)psadmin_3.c_str();
+	arg_list[3] = (char*)psadmin_4.c_str();
+	arg_list[4] = (char*)psadmin_5.c_str();
+	arg_list[5] = (char*)psadmin_6.c_str();
+	arg_list[6] = NULL;
+
+	/* Spawn a child process running the "psadmin" command. Ignore the returned child process ID. */
+	psutils.spawn (arg_list[0], arg_list);
+}
+
+void PSutils::buildarg(std::string flag1, std::string flag2, std::string flag3) {
+	std::cout << "LOC --- --- PSutils::buildarg" << std::endl;
+	std::cout << flag1 << ": FLAG1" << std::endl;
+	std::cout << flag2 << ": FLAG2" << std::endl;
+	std::cout << flag3 << ": FLAG3" << std::endl;
+
+	if(flag1 == "-c" && flag2 == "status") {
+		//----------status app-------------
+		std::cout << "LOC --- --- PSutils::buildarg:: -c sstatus" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "sstatus";
+
+		//std::string term1 = flag1,term2 = "sstatus", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+	}
+
+	if(flag1 == "-c" && flag2 == "stop") {
+		std::cout << "LOC --- --- PSutils::buildarg:: -c stop" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "shutdown!";
+		//----------stop app-------------
+		//std::string term1 = flag1,term2 = "shutdown!", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+		//----------cleanipc-------------
+		ss << std::endl;
+		ss << "cleanipc";
+		//std::string term1 = flag1,term2 = "cleanipc", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+		//----------purge cache----------
+		ss << std::endl;
+		ss << "purge";
+		//std::string term1 = flag1,term2 = "purge", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+	}
+
+
+	if(flag1 == "-c" && flag2 == "start") {
+		//----------start app-------------
+		std::cout << "LOC --- --- PSutils::buildarg:: -c start" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "parallelboot";
+
+		//std::string term1 = flag1,term2 = "parallelboot", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+	}
+
+
+	if(flag1 == "-c" && flag2 == "restart") {
+		std::cout << "LOC --- --- PSutils::buildarg:: -c restart" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "shutdown!";
+		//----------stop app-------------
+		//std::string term1 = flag1,term2 = "shutdown!", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+		//----------cleanipc-------------
+		ss << std::endl;
+		ss << "cleanipc";
+		//std::string term1 = flag1,term2 = "cleanipc", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+		//----------purge cache----------
+		ss << std::endl;
+		ss << "purge";
+		//std::string term1 = flag1,term2 = "purge", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+		//----------start app-------------
+		ss << std::endl;
+		ss << "parallelboot";
+		//std::string term1 = flag1,term2 = "parallelboot", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+	}
+
+	if(flag1 == "-w" && flag2 == "status") {
+		//----------status web-------------
+		std::cout << "LOC --- --- PSutils::buildarg:: -w status" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "status";
+
+		//std::string term1 = flag1,term2 = "sstatus", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+	}
+
+	if(flag1 == "-w" && flag2 == "stop") {
+		std::cout << "LOC --- --- PSutils::buildarg:: -w stop" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "shutdown!";
+		//----------stop web-------------
+		//std::string term1 = flag1,term2 = "shutdown!", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+	}
+
+	if(flag1 == "-w" && flag2 == "start") {
+		std::cout << "LOC --- --- PSutils::buildarg:: -w start" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "start";
+		{	//----------start web-------------
+			std::string term1 = flag1,term2 = "start", term3 = flag3;
+			psutils.wrapper(flag1,ss.str(),flag3);
+		}
+	}
+
+	if(flag1 == "-w" && flag2 == "restart") {
+		std::cout << "LOC --- --- PSutils::buildarg:: -w restart" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "shutdown!";
+		//----------stop web-------------
+		//std::string term1 = flag1,term2 = "shutdown!", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+
+		//----------purge cache----------
+		// Need to find way to delete files/dir
+
+		//----------start web-------------
+		ss << std::endl;
+		ss << "start";
+		//std::string term1 = flag1,term2 = "start", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+	}
+
+	if(flag1 == "-p" && flag2 == "status") {
+		//----------status prcs -------------
+		std::cout << "LOC --- --- PSutils::buildarg:: -p status" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "sstatus";
+
+		//std::string term1 = flag1,term2 = "status", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+	}
+
+	if(flag1 == "-p" && flag2 == "stop") {
+		std::cout << "LOC --- --- PSutils::buildarg:: -p stop" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "stop";
+		//----------stop prcs-------------
+		//	std::string term1 = flag1,term2 = "stop", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+	}
+
+	if(flag1 == "-p" && flag2 == "start") {
+		std::cout << "LOC --- --- PSutils::buildarg:: -c start" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "start";
+		//----------start prcs-------------
+		//	std::string term1 = flag1,term2 = "start", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+	}
+
+	if(flag1 == "-p" && flag2 == "restart") {
+		std::cout << "LOC --- --- PSutils::buildarg:: -p restart" << std::endl;
+		PSutils psutils;
+		std::stringstream ss;
+		ss << "stop";
+		//----------stop prcs-------------
+		//	std::string term1 = flag1,term2 = "stop", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+		//----------cleanipc-------------
+		ss << std::endl;
+		ss << "cleanipc";
+		//	std::string term1 = flag1,term2 = "cleanipc", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+
+		//----------purge cache----------
+		// Need to find way to delete files/dir
+
+		//----------start prcs-------------
+		ss << std::endl;
+		ss << "start";
+		//	std::string term1 = flag1,term2 = "start", term3 = flag3;
+		psutils.wrapper(flag1,ss.str(),flag3);
+	}
+}
 

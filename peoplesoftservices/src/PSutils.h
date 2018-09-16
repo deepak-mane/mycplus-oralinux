@@ -18,6 +18,8 @@ public:
 		return myfile_output;
 	}
 
+	void buildarg(std::string flag1, std::string flag2, std::string flag3);
+	void wrapper(std::string term1, std::string term2, std::string term3);
 	int spawn(char* program, char** arg_list);
 	PSutils();
 	~PSutils();

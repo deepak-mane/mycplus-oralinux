@@ -15,10 +15,10 @@ private:
 	bool ProcessScheduler_status;
 
 public:
-	void status();
-	void start();
-	void stop();
-	void restart();
+	void status(std::string environment, std::string server, std::string action, std::string prcs_server, std::string prcs_status);
+	void start(std::string environment, std::string server, std::string action, std::string prcs_server, std::string prcs_start);
+	void stop(std::string environment, std::string server, std::string action, std::string prcs_server, std::string prcs_stop);
+	void restart(std::string environment, std::string server, std::string action, std::string prcs_server, std::string prcs_restart);
 	ProcessScheduler();
 	~ProcessScheduler();
 };
