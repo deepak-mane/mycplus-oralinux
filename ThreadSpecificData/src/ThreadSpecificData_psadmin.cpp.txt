@@ -1,0 +1,116 @@
+//============================================================================
+// Name        : ThreadSpecificData.cpp
+// Author      : Deepak Mane
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+//============================================================================
+#include <malloc.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+using namespace std;
+
+/* Spawn a child process running a new program. PROGRAM is the name
+ of the program to run; the path will be searched for this program.
+ ARG_LIST is a NULL-terminated list of character strings to be
+ passed as the program's argument list. Returns the process ID of
+ the spawned process. */
+int spawn(char* program, char** arg_list) {
+	pid_t child_pid;
+	/* Duplicate this process. */
+	child_pid = fork();
+	if (child_pid != 0)
+		/* This is the parent process c. */
+		return child_pid;
+	else {
+		/* Now execute PROGRAM, searching for it in the path. */
+		execvp(program, arg_list);
+		/* The execvp function returns only if an error occurs. */
+		fprintf(stderr, "an error occurred in execvp\n");
+		abort();
+	}
+}
+
+/* The key used to associate a log file pointer with each thread. */
+static pthread_key_t thread_log_key;
+/* Write MESSAGE to the log file for the current thread. */
+void write_to_thread_log(const char* message) {
+	FILE* thread_log = (FILE*) pthread_getspecific(thread_log_key);
+	fprintf(thread_log, "%s\n", message);
+}
+/* Close the log file pointer THREAD_LOG. */
+void close_thread_log(void* thread_log)
+
+{
+	fclose((FILE*) thread_log);
+}
+void* thread_function(void* args) {
+	char thread_log_filename[20];
+	FILE* thread_log;
+	/* Generate the filename for this thread's log file. */
+	sprintf(thread_log_filename, "thread%d.log", (int) pthread_self());
+	/* Open the log file. */
+	thread_log = fopen(thread_log_filename, "w");
+	/* Store the file pointer in thread-specific data under thread_log_key. */
+	pthread_setspecific(thread_log_key, thread_log);
+	write_to_thread_log("Thread starting.");
+	/* Do work here... */
+
+	string outputFileName = "text.txt";
+
+	//  ofstream outFile;
+	//	outFile.open(outputFileName);
+
+	fstream outFile;
+	outFile.open(outputFileName, ios::out);
+
+	if (outFile.is_open()) {
+		outFile << "Hello there" << endl;
+		outFile << 12345 << endl;
+
+		pid_t child_pid;
+		write_to_thread_log("the main program process ID is %d\n", (int) getpid());
+		child_pid = fork();
+		if (child_pid != 0) {
+			outFile << printf("this is the parent process, with id %d\n", (int) getpid())<< endl;
+			outFile << printf("the child's process ID is %d\n", (int) child_pid)<< endl;
+		} else
+			outFile << printf("this is the child process, with id %d\n", (int) getpid())<< endl;
+
+		/*The argument list to pass to the "ls" command. */
+		char* arg_list[] = { "psadmin", /* argv[0], the name of the program. */
+		"-c", "sstatus", "-d", "APPDOM", "/",
+		NULL /*The argument list must end with a NULL. */
+		};
+		/*Spawn a child process running the "ls" command. Ignore the
+		 returned child process ID. */
+		outFile << spawn("psadmin", arg_list)<< endl;
+		outFile.close();
+	} else {
+		cout << "Could not create file: " << outputFileName << endl;
+	}
+	return NULL;
+}
+
+int main() {
+	int i;
+	pthread_t threads[1];
+	/* Create a key to associate thread log file pointers in
+	 thread-specific data. Use close_thread_log to clean up the file
+	 pointers. */
+	pthread_key_create(&thread_log_key, close_thread_log);
+	/* Create threads to do the work. */
+	for (i = 0; i < 1; ++i)
+		pthread_create(&(threads[i]), NULL, thread_function, NULL);
+	/* Wait for all threads to finish.*/
+	for (i = 0; i < 1; ++i)
+		pthread_join(threads[i], NULL);
+	return 0;
+}

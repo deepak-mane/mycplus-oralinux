@@ -1,0 +1,92 @@
+//============================================================================
+// Name        : WrittingPsadminOut.cpp
+// Author      : Deepak Mane
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+// Listing 3.4 ( fork-exec.c) Using fork and exec Together
+//============================================================================
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+using namespace std;
+
+/* Spawn a child process running a new program. PROGRAM is the name
+ of the program to run; the path will be searched for this program.
+ ARG_LIST is a NULL-terminated list of character strings to be
+ passed as the program's argument list. Returns the process ID of
+ the spawned process. */
+int spawn(char* program, char** arg_list) {
+	pid_t child_pid;
+	/* Duplicate this process. */
+	child_pid = fork();
+	if (child_pid != 0)
+		/* This is the parent process c. */
+		return child_pid;
+	else {
+		/* Now execute PROGRAM, searching for it in the path. */
+		execvp(program, arg_list);
+		/* The execvp function returns only if an error occurs. */
+		fprintf(stderr, "an error occurred in execvp\n");
+		abort();
+	}
+}
+/*
+int main() {
+	//The argument list to pass to the "ls" command.
+	char* arg_list[] = { "ls",  argv[0], the name of the program.
+	"-l", "/",
+	NULL  The argument list must end with a NULL.
+	};
+	 Spawn a child process running the "ls" command. Ignore the
+	 returned child process ID.
+	spawn("ls", arg_list);
+	printf("done with main program\n");
+	return 0;
+}*/
+
+
+int main() {
+	pid_t child_pid;
+	printf ("the main program process ID is %d\n", (int) getpid ());
+	child_pid = fork ();
+	if (child_pid != 0) {
+	printf ("this is the parent process, with id %d\n", (int) getpid ());
+	printf ("the child's process ID is %d\n", (int) child_pid);
+	}
+	else
+	printf ("this is the child process, with id %d\n", (int) getpid ());
+
+
+	string outputFileName = "text.txt";
+	fstream outFile;
+	outFile.open(outputFileName, ios::out);
+
+	/*The argument list to pass to the "ls" command. */
+	char* arg_list[] = {
+	"psadmin",   /* argv[0], the name of the program. */
+	"-c",
+	"sstatus",
+	"-d",
+	"APPDOM",
+	"/",
+	NULL  /*The argument list must end with a NULL. */
+	};
+	 /*Spawn a child process running the "ls" command. Ignore the
+	 returned child process ID. */
+	if(outFile.is_open()) {
+		spawn("psadmin", arg_list) > outFile;
+		outFile.close();
+ 	}
+	else {
+		cout << "Could not create file: " << outputFileName << endl;
+	}
+	printf("done with main program\n");
+	return 0;
+	}
