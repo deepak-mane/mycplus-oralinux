@@ -20,14 +20,14 @@ using namespace std;
 
 //prototypes
 void GetData();
-doubleCalculateAvgAge(vector <person>, int);
+double CalculateAvgAge(vector<person> arrOfNames, int);
 void displayOutput(vector <person>, double);
 
 
 
 int main() {
 
-	getData();
+	GetData();
 	return 0;
 }
 
@@ -67,5 +67,37 @@ void GetData() {
 			int age = stoi(line.substr(spacePos[1])); // convert to integer
 			arrOfNames.push_back(person(firstName, lastName, age));
 		}
+
+		inputFile.close();
+
+		double avg = CalculateAvgAge(arrOfNames, counter);
+
+		displayOutput(arrOfNames, avg);
 	}
+}
+
+double CalculateAvgAge(vector<person> arrOfNames, int counter) {
+			double avg = 0;
+			int total = 0;
+
+			//loop through the vector with all the names and sum all the ages
+			for(int i =0; i<counter; i++) {
+				total =+ arrOfNames[i].getAge();
+			}
+
+			avg = total * 1.0 / counter;
+			return avg;
+}
+
+void displayOutput(vector<person> arrOfNames, double avg) {
+	//display all names in formatted output
+	for(int i = 0; i < arrOfNames.size(); i++) {
+		cout << "PERSON # " << i + 1 << endl;
+		cout << "FIRST NAME: " << arrOfNames[i].getFirstName() << endl;
+		cout << "LAST NAME: " << arrOfNames[i].getLastName() << endl;
+		cout << "AGE: " << arrOfNames[i].getAge() << endl;
+		cout << "-----------------------------------------------" << endl;
+	}
+
+	cout << "\nAVERAGE AGE IS " << setprecision(2) << fixed << avg << " YAERS." << endl;
 }

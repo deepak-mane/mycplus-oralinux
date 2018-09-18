@@ -1,0 +1,24 @@
+Sun Sep  9 04:03:02 2018  [ERROR]: Message Logged using C++ Interface, Log level: LOG_ERROR
+Sun Sep  9 04:03:02 2018  [ALARM]: Message Logged using C++ Interface, Log level: LOG_ALARM
+Sun Sep  9 04:03:02 2018  [ALWAYS]: Message Logged using C++ Interface, Log level: LOG_ALWAYS
+Message Logged using C++ Interface, Log level: LOG_INFO
+Sun Sep  9 04:03:02 2018  [INFO]: Message Logged using C++ Interface, Log level: LOG_BUFFER
+Sun Sep  9 04:03:02 2018  [TRACE]: Message Logged using C++ Interface, Log level: LOG_TRACE
+Sun Sep  9 09:46:26 2018  [ERROR]: Message Logged using C++ Interface, Log level: LOG_ERROR
+Sun Sep  9 09:46:26 2018  [ALARM]: Message Logged using C++ Interface, Log level: LOG_ALARM
+Sun Sep  9 09:46:26 2018  [ALWAYS]: Message Logged using C++ Interface, Log level: LOG_ALWAYS
+Message Logged using C++ Interface, Log level: LOG_INFO
+Sun Sep  9 09:46:26 2018  [INFO]: Message Logged using C++ Interface, Log level: LOG_BUFFER
+Sun Sep  9 09:46:26 2018  [TRACE]: Message Logged using C++ Interface, Log level: LOG_TRACE
+Sun Sep  9 09:49:06 2018  [ERROR]: Message Logged using C++ Interface, Log level: LOG_ERROR
+Sun Sep  9 09:49:06 2018  [ALARM]: Message Logged using C++ Interface, Log level: LOG_ALARM
+Sun Sep  9 09:49:06 2018  [ALWAYS]: Message Logged using C++ Interface, Log level: LOG_ALWAYS
+Message Logged using C++ Interface, Log level: LOG_INFO
+Sun Sep  9 09:49:06 2018  [INFO]: Message Logged using C++ Interface, Log level: LOG_BUFFER
+Sun Sep  9 09:49:06 2018  [TRACE]: Message Logged using C++ Interface, Log level: LOG_TRACE
+Sun Sep  9 10:07:30 2018  [ERROR]: Message Logged using C++ Interface, Log level: LOG_ERROR
+Sun Sep  9 10:07:30 2018  [ALARM]: Message Logged using C++ Interface, Log level: LOG_ALARM
+Sun Sep  9 10:07:30 2018  [ALWAYS]: Message Logged using C++ Interface, Log level: LOG_ALWAYS
+Message Logged using C++ Interface, Log level: LOG_INFO
+Sun Sep  9 10:07:30 2018  [INFO]: Message Logged using C++ Interface, Log level: LOG_BUFFER
+Sun Sep  9 10:07:30 2018  [TRACE]: Message Logged using C++ Interface, Log level: LOG_TRACE

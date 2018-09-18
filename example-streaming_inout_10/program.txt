@@ -1,0 +1,7 @@
+Neo Anderson 33
+Homer Simpson 40
+Bart Simpson 10
+Lisa Simpson 8
+Maggie Simpson 2
+Walter White 52
+Jesse Pinkman 28

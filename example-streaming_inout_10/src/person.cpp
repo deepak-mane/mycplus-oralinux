@@ -19,7 +19,7 @@ person::person() {
 }
 
 person::person(string firstName, string lastName, int age) {
-	//set valuse using setters * passing user supplied values;
+	//set values using setters * passing user supplied values;
 	setFirstName(firstName);
 	setLastName(lastName);
 	setAge(age);

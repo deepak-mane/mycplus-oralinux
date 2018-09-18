@@ -60,12 +60,6 @@ PSutils::~PSutils() {
 
 int PSutils::spawn(char* program, char** arg_list) {
 	std::cout << "LOC --- --- PSutils::spawn:: execvp" << std::endl;
-	int outfd[2];
-	int infd[2];
-
-	// pipes for parent to write and read
-	pipe(pipes[PARENT_READ_PIPE]);
-	pipe(pipes[PARENT_WRITE_PIPE]);
 
 	/* Spawn a child process running a new program. PROGRAM is the name
 	 of the program to run; the path will be searched for this program.
@@ -101,24 +95,21 @@ int PSutils::spawn(char* program, char** arg_list) {
 		/* CHILD */
 		//printf("Child: executing program\n");
 		std::cout << "Child: executing " << program << std::endl;
-		char buffer[100];
-		int count;
+//		char buffer[100];
+//		int count;
 
-		/* close fds not required by parent */
-		close(CHILD_READ_FD);
-		close(CHILD_WRITE_FD);
 
-		// Write to child’s stdin
-		write(PARENT_WRITE_FD, "2^32\n", 5);
-
-		// Read from child’s stdout
-		count = read(PARENT_READ_FD, buffer, sizeof(buffer)-1);
-		if (count >= 0) {
-			buffer[count] = 0;
-			printf("%s", buffer);
-		} else {
-			printf("IO Error\n");
+		// std::ofstream file_;
+		// file_.open("mytext.txt"); can also as below
+		std::ofstream file_("mytext.txt");
+		if(file_.is_open()) {
+			file_ << "Hi \n";
+			file_.close();
 		}
+
+
+
+		// To pause the script std::cin.get();
 
 		/* Now execute PROGRAM, searching for it in the path. */
 		execvp(program, arg_list); perror("execve failed");
@@ -126,15 +117,20 @@ int PSutils::spawn(char* program, char** arg_list) {
 	} else if (child_pid > 0) {
 		/* PARENT */
 
-		dup2(CHILD_READ_FD, STDIN_FILENO);
-		dup2(CHILD_WRITE_FD, STDOUT_FILENO);
+		std::string line_;
+		std::ifstream file_1("mytext.txt");
+		if(file_1.is_open()) {
+			while(getline(file_1, line_)) {
+				std::cout << line_ << std::endl;
+			}
+			file_1.close();
+		} else {
+			std::cout << "File mytext.txt cannot be opened." << std::endl;
+		}
 
 		/* Close fds not required by child. Also, we don't
 		   want the exec'ed program to know these existed */
-		close(CHILD_READ_FD);
-		close(CHILD_WRITE_FD);
-		close(PARENT_READ_FD);
-		close(PARENT_WRITE_FD);
+
 
 		if( (pid = wait(&status)) < 0) {
 			perror("wait");

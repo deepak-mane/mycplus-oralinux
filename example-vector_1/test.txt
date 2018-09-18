@@ -1,0 +1,22 @@
+
+> Prog Name      Queue Name  2ndQueue Name  Grp Name      ID RqDone Load Done Current Service
+---------      ----------  ----------     --------      -- ------ --------- ---------------
+BBL            64333                      pumfin2+       0    416     20800 (  IDLE )
+PSMONITORSRV   MONITOR                    MONITOR        1      0         0 (  IDLE )
+PSAPPSRV       APPQ                       APPSRV         1      0         0 (  IDLE )
+PSWATCHSRV     WATCH                      WATCH          1      0         0 (  IDLE )
+PSAPPSRV       APPQ                       APPSRV         2      0         0 (  IDLE )
+WSL            00001.00020                BASE          20      0         0 (  IDLE )
+TMMETADATA     00094.00250                JREPGRP      250      0         0 (  IDLE )
+PSBRKDSP       BRKDQ_dflt                 PUBSUB       100      0         0 (  IDLE )
+PSSAMSRV       SAMQ                       APPSRV       100      0         0 (  IDLE )
+PSPPMSRV       PPMQ2                      PPMGRP       100    507     25350 (  IDLE )
+PSBRKHND       BRKHQ_dflt                 PUBSUB       101      0         0 (  IDLE )
+JSL            00095.00200                JSLGRP       200      0         0 (  IDLE )
+PSPUBDSP       PUBDQ_dflt                 PUBSUB       200      0         0 (  IDLE )
+PSPUBHND       PUBHQ_dflt                 PUBSUB       201      0         0 (  IDLE )
+TMUSREVT       00001.00059                BASE          59      0         0 (  IDLE )
+PSSUBDSP       SUBDQ_dflt                 PUBSUB       300      0         0 (  IDLE )
+PSSUBHND       SUBHQ_dflt                 PUBSUB       301      0         0 (  IDLE )
+
+> 

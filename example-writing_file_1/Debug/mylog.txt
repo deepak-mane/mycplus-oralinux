@@ -1,0 +1,2 @@
+./example-writing_file_1: invalid date `ls'
+Sun Sep 16 15:37:34 UTC 2018

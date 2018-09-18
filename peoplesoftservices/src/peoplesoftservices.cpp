@@ -77,6 +77,32 @@ int main(int argc, char* argv[]) {
 		std::cout << "Server Set: " << server << std::endl;
 		std::cout << "Action Set: " << action << std::endl;
 
+		std::ifstream inFile;
+		inFile.open("/home/psadm2/workspace1/peoplesoftservices/params.txt");
+
+		//Check for Error
+		if(inFile.fail()) {
+			std::cerr << "Error Opening File" << std::endl;
+			exit(1);
+		}
+
+		std::string item;
+		int count = 0;
+		//Read a file until you 've reached the endof file
+		while(!inFile.eof()) {
+			inFile >> item;
+			//count++;
+			if (item == environment) {
+				count++;
+			}
+		}
+
+		inFile.close();
+
+		std::cout << "Environment Config found ::  " << count << std::endl;
+
+
+
 		std::stringstream ss1;
 		ss1 << "psadmin,";
 
